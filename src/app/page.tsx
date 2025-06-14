@@ -1,17 +1,52 @@
 'use client';
 
 import { motion, useScroll, useSpring } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import HeroSection from '@/components/sections/HeroSection';
 import ProfileSection from '@/components/sections/ProfileSection';
 import ContactSection from '@/components/sections/ContactSection';
 
 export default function Home() {
+  const [activeSection, setActiveSection] = useState('hero');
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
+
+  // 現在のセクションを検出
+  useEffect(() => {
+    const sections = ['hero', 'profile', 'contact'];
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px', // ビューポートの中央50%を基準
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          if (sections.includes(sectionId)) {
+            setActiveSection(sectionId);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // セクションへのスムーズスクロール
   const scrollToSection = (sectionId: string) => {
@@ -45,20 +80,41 @@ export default function Home() {
               { id: 'hero', label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
               { id: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
               { id: 'contact', label: 'Contact', icon: 'M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' }
-            ].map((item) => (
-              <motion.button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="p-3 rounded-full bg-white/20 dark:bg-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-600/30 text-gray-800 dark:text-white transition-colors group"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                title={item.label}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                </svg>
-              </motion.button>
-            ))}
+            ].map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <motion.button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`p-3 rounded-full transition-all duration-300 group relative ${
+                    isActive 
+                      ? 'bg-white/30 dark:bg-gray-600/30 text-gray-800 dark:text-white' 
+                      : 'bg-white/20 dark:bg-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-600/30 text-gray-800 dark:text-white'
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  title={item.label}
+                  animate={{
+                    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.35)' : undefined,
+                    borderColor: isActive ? 'rgba(59, 130, 246, 0.3)' : 'transparent'
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  style={{
+                    border: '1px solid transparent'
+                  }}
+                >
+                  <motion.svg 
+                    className="w-5 h-5 relative z-10" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                    transition={{ duration: 0.3 }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                  </motion.svg>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
       </motion.nav>
