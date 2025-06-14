@@ -55,7 +55,7 @@ export default function ProfileSection() {
     >
       {/* 動的背景 */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
+        className="absolute -top-32 -bottom-32 left-0 right-0 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
         style={{ y: backgroundY }}
       />
       

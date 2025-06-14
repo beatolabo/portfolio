@@ -46,7 +46,7 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* 動的背景 */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800"
+        className="absolute -top-64 -bottom-64 left-0 right-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800"
         style={{ y: backgroundY }}
       />
       

@@ -84,7 +84,7 @@ export default function ContactSection() {
     >
       {/* 動的背景 */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+        className="absolute -top-32 -bottom-32 left-0 right-0 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
         style={{ y: backgroundY }}
       />
       
