@@ -8,25 +8,29 @@ interface VideoCarouselProps {
   videos: VideoData[];
 }
 
-// 動画カード用コンポーネント
-function VideoCard({ 
+// プリロード式動画カード用コンポーネント
+function PreloadedVideoCard({ 
   video, 
   isMain = false, 
+  isVisible = true,
   onClick 
 }: { 
   video: VideoData; 
   isMain?: boolean; 
+  isVisible?: boolean;
   onClick?: () => void;
 }) {
   return (
-    <motion.div
-      className={`cursor-pointer group ${isMain ? '' : 'opacity-70 hover:opacity-100'}`}
+    <div
+      className={`cursor-pointer group transition-all duration-150 ${
+        isVisible ? (isMain ? '' : 'opacity-70 hover:opacity-100') : 'opacity-0 pointer-events-none'
+      }`}
       onClick={onClick}
-      whileHover={{ scale: isMain ? 1.02 : 1.05 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2 }}
+      style={{
+        transform: isVisible ? 'scale(1)' : 'scale(0.95)',
+      }}
     >
-      <div className={`relative ${isMain ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'} rounded-xl overflow-hidden transition-shadow duration-300`}>
+      <div className={`relative ${isMain ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'} rounded-xl overflow-hidden transition-shadow duration-200`}>
         {/* 16:9 アスペクト比を維持 */}
         <div className="relative w-full pb-[56.25%]">
           <iframe
@@ -36,13 +40,13 @@ function VideoCard({
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            loading="lazy"
+            loading="eager"
           />
         </div>
         
         {/* サブ動画用のオーバーレイ */}
         {!isMain && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
             <div className="bg-white/90 rounded-full p-2">
               <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
@@ -67,7 +71,7 @@ function VideoCard({
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -101,61 +105,64 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
-      {/* メインレイアウト：デスクトップは3カラム、モバイルは縦積み */}
+      {/* プリロード式レイアウト：全動画を同時レンダリング、表示切り替えのみ */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
         
         {/* 左の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`prev-${prevVideoData.id}`}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <VideoCard 
-                video={prevVideoData} 
-                onClick={prevVideo}
-              />
-            </motion.div>
-          </AnimatePresence>
+        <div className="hidden lg:block relative">
+          {videos.map((video, index) => {
+            const isPrevVideo = index === prevIndex;
+            return (
+              <div
+                key={`prev-${video.id}`}
+                className={`${isPrevVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+              >
+                <PreloadedVideoCard 
+                  video={video} 
+                  isVisible={isPrevVideo}
+                  onClick={prevVideo}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {/* メイン動画（中央・3カラム分） */}
-        <div className="lg:col-span-3">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`main-${currentVideo.id}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-            >
-              <VideoCard 
-                video={currentVideo} 
-                isMain={true}
-              />
-            </motion.div>
-          </AnimatePresence>
+        <div className="lg:col-span-3 relative">
+          {videos.map((video, index) => {
+            const isCurrentVideo = index === currentIndex;
+            return (
+              <div
+                key={`main-${video.id}`}
+                className={`${isCurrentVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+              >
+                <PreloadedVideoCard 
+                  video={video} 
+                  isMain={true}
+                  isVisible={isCurrentVideo}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {/* 右の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`next-${nextVideoData.id}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <VideoCard 
-                video={nextVideoData} 
-                onClick={nextVideo}
-              />
-            </motion.div>
-          </AnimatePresence>
+        <div className="hidden lg:block relative">
+          {videos.map((video, index) => {
+            const isNextVideo = index === nextIndex;
+            return (
+              <div
+                key={`next-${video.id}`}
+                className={`${isNextVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+              >
+                <PreloadedVideoCard 
+                  video={video} 
+                  isVisible={isNextVideo}
+                  onClick={nextVideo}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
