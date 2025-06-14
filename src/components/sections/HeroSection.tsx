@@ -1,24 +1,163 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import VideoCarousel from '@/components/ui/VideoCarousel';
 import { sampleVideos } from '@/types/video';
 
 export default function HeroSection() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { scrollY } = useScroll();
+  
+  // パララックス効果用のトランスフォーム
+  const backgroundY = useTransform(scrollY, [0, 1000], [0, -200]);
+  const textY = useTransform(scrollY, [0, 500], [0, -100]);
+  const carouselY = useTransform(scrollY, [0, 800], [0, -50]);
+  
+  // スプリングアニメーション
+  const springX = useSpring(mousePosition.x, { stiffness: 100, damping: 10 });
+  const springY = useSpring(mousePosition.y, { stiffness: 100, damping: 10 });
+
+  // マウス追従効果
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX - window.innerWidth / 2) * 0.01;
+      const y = (e.clientY - window.innerHeight / 2) * 0.01;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // フローティング要素のアニメーション
+  const floatingVariants = {
+    animate: {
+      y: [0, -10, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold mb-8">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* 動的背景 */}
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800"
+        style={{ y: backgroundY }}
+      />
+      
+      {/* フローティング装飾要素 */}
+      <motion.div
+        className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full opacity-60"
+        variants={floatingVariants}
+        animate="animate"
+        style={{ x: springX, y: springY }}
+      />
+      <motion.div
+        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full opacity-40"
+        variants={floatingVariants}
+        animate="animate"
+        initial={{ animationDelay: '1s' }}
+        style={{ x: springX * -0.5, y: springY * -0.5 }}
+      />
+      <motion.div
+        className="absolute bottom-40 left-20 w-1 h-1 bg-blue-300 rounded-full opacity-80"
+        variants={floatingVariants}
+        animate="animate"
+        initial={{ animationDelay: '2s' }}
+        style={{ x: springX * 0.3, y: springY * 0.3 }}
+      />
+      
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        {/* ヘッダーテキスト */}
+        <motion.div 
+          className="text-center mb-12"
+          style={{ y: textY }}
+        >
+          <motion.h1 
+            className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1, 
+              ease: [0.23, 1, 0.32, 1],
+              delay: 0.2 
+            }}
+          >
             Music Portfolio
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
+          </motion.h1>
+          
+          <motion.p 
+            className="text-xl text-gray-600 dark:text-gray-300"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.23, 1, 0.32, 1],
+              delay: 0.5 
+            }}
+          >
             アニメソングリミックスアーティスト
-          </p>
-        </div>
+          </motion.p>
+          
+          {/* サブタイトル追加 */}
+          <motion.div
+            className="mt-6 flex justify-center space-x-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.23, 1, 0.32, 1],
+              delay: 0.8 
+            }}
+          >
+            <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+              Music Production
+            </span>
+            <span className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium">
+              Remix Artist
+            </span>
+          </motion.div>
+        </motion.div>
         
         {/* YouTube動画カルーセル */}
-        <div className="w-full">
+        <motion.div 
+          className="w-full"
+          style={{ y: carouselY }}
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 1.2, 
+            ease: [0.23, 1, 0.32, 1],
+            delay: 1.0 
+          }}
+        >
           <VideoCarousel videos={sampleVideos} />
-        </div>
+        </motion.div>
       </div>
+      
+      {/* スクロール促進インジケーター */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2, duration: 0.8 }}
+      >
+        <motion.div
+          className="flex flex-col items-center text-gray-400 dark:text-gray-500"
+          animate={{ y: [0, 5, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <span className="text-sm mb-2">Scroll Down</span>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
