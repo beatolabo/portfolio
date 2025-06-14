@@ -1,140 +1,193 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { VideoData } from '@/types/video';
-import YouTubeVideo from './YouTubeVideo';
 
 interface VideoCarouselProps {
   videos: VideoData[];
 }
 
+// 動画カード用コンポーネント
+function VideoCard({ 
+  video, 
+  isMain = false, 
+  onClick 
+}: { 
+  video: VideoData; 
+  isMain?: boolean; 
+  onClick?: () => void;
+}) {
+  return (
+    <motion.div
+      className={`cursor-pointer group ${isMain ? '' : 'opacity-70 hover:opacity-100'}`}
+      onClick={onClick}
+      whileHover={{ scale: isMain ? 1.02 : 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className={`relative ${isMain ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'} rounded-xl overflow-hidden transition-shadow duration-300`}>
+        {/* 16:9 アスペクト比を維持 */}
+        <div className="relative w-full pb-[56.25%]">
+          <iframe
+            className="absolute top-0 left-0 w-full h-full"
+            src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
+            title={video.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+        
+        {/* サブ動画用のオーバーレイ */}
+        {!isMain && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+            <div className="bg-white/90 rounded-full p-3">
+              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M15 14h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* 動画情報 */}
+      <div className="mt-3 px-1">
+        <h3 className={`font-semibold text-gray-900 dark:text-white line-clamp-2 ${
+          isMain ? 'text-lg' : 'text-sm'
+        }`}>
+          {video.title}
+        </h3>
+        {video.description && (
+          <p className={`text-gray-600 dark:text-gray-300 mt-1 line-clamp-1 ${
+            isMain ? 'text-sm' : 'text-xs'
+          }`}>
+            {video.description}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [videosPerView, setVideosPerView] = useState(1);
-  const constraintsRef = useRef<HTMLDivElement>(null);
 
-  // レスポンシブ対応：画面サイズに応じて表示する動画数を調整
-  useEffect(() => {
-    const updateVideosPerView = () => {
-      if (window.innerWidth >= 1024) {
-        setVideosPerView(3); // デスクトップ：3つ
-      } else if (window.innerWidth >= 768) {
-        setVideosPerView(2); // タブレット：2つ
-      } else {
-        setVideosPerView(1); // モバイル：1つ
-      }
-    };
-
-    updateVideosPerView();
-    window.addEventListener('resize', updateVideosPerView);
-    return () => window.removeEventListener('resize', updateVideosPerView);
-  }, []);
-
-  const maxIndex = Math.max(0, videos.length - videosPerView);
-
+  // 一周するループ機能
   const nextVideo = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex >= maxIndex ? 0 : prevIndex + 1
+      prevIndex === videos.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevVideo = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? maxIndex : prevIndex - 1
+      prevIndex === 0 ? videos.length - 1 : prevIndex - 1
     );
   };
 
   const goToVideo = (index: number) => {
-    setCurrentIndex(Math.min(index, maxIndex));
+    setCurrentIndex(index);
   };
 
-  const videoWidth = `${100 / videosPerView}%`;
+  // 前後の動画インデックス
+  const prevIndex = currentIndex === 0 ? videos.length - 1 : currentIndex - 1;
+  const nextIndex = currentIndex === videos.length - 1 ? 0 : currentIndex + 1;
+
+  const currentVideo = videos[currentIndex];
+  const prevVideoData = videos[prevIndex];
+  const nextVideoData = videos[nextIndex];
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto">
-      {/* カルーセルコンテナ */}
-      <div ref={constraintsRef} className="overflow-hidden rounded-lg">
-        <motion.div
-          className="flex"
-          animate={{
-            x: `-${currentIndex * (100 / videosPerView)}%`,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
-          }}
-          drag="x"
-          dragConstraints={constraintsRef}
-          dragElastic={0.1}
-          onDragEnd={(_, info) => {
-            const threshold = 50;
-            if (info.offset.x > threshold && currentIndex > 0) {
-              prevVideo();
-            } else if (info.offset.x < -threshold && currentIndex < maxIndex) {
-              nextVideo();
-            }
-          }}
-        >
-          {videos.map((video, index) => (
+    <div className="w-full max-w-7xl mx-auto px-4">
+      {/* メインレイアウト：デスクトップは3カラム、モバイルは縦積み */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
+        
+        {/* 左の動画（デスクトップのみ表示） */}
+        <div className="hidden lg:block">
+          <AnimatePresence mode="wait">
             <motion.div
-              key={video.id}
-              className="flex-shrink-0 px-2"
-              style={{ width: videoWidth }}
+              key={`prev-${prevVideoData.id}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
             >
-              <YouTubeVideo video={video} />
+              <VideoCard 
+                video={prevVideoData} 
+                onClick={prevVideo}
+              />
             </motion.div>
-          ))}
-        </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* メイン動画（中央・3カラム分） */}
+        <div className="lg:col-span-3">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`main-${currentVideo.id}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+            >
+              <VideoCard 
+                video={currentVideo} 
+                isMain={true}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* 右の動画（デスクトップのみ表示） */}
+        <div className="hidden lg:block">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`next-${nextVideoData.id}`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <VideoCard 
+                video={nextVideoData} 
+                onClick={nextVideo}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* ナビゲーションボタン */}
-      <AnimatePresence>
-        {videos.length > 1 && (
-          <>
-            {/* 前へボタン */}
-            <motion.button
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
-              onClick={prevVideo}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </motion.button>
-
-            {/* 次へボタン */}
-            <motion.button
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
-              onClick={nextVideo}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </motion.button>
-          </>
-        )}
-      </AnimatePresence>
+      {/* モバイル用ナビゲーションボタン */}
+      <div className="flex lg:hidden justify-center space-x-4 mt-6">
+        <button
+          onClick={prevVideo}
+          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg rounded-full p-3 transition-colors"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={nextVideo}
+          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg rounded-full p-3 transition-colors"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
       {/* インジケーター */}
-      {maxIndex > 0 && (
-        <div className="flex justify-center space-x-2 mt-6">
-          {Array.from({ length: maxIndex + 1 }, (_, index) => (
+      {videos.length > 1 && (
+        <div className="flex justify-center space-x-2 mt-8">
+          {videos.map((_, index) => (
             <button
               key={index}
-              className={`w-3 h-3 rounded-full transition-colors ${
+              className={`w-2 h-2 rounded-full transition-all duration-200 ${
                 index === currentIndex
-                  ? 'bg-blue-500'
+                  ? 'bg-blue-500 w-8'
                   : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
               }`}
               onClick={() => goToVideo(index)}
