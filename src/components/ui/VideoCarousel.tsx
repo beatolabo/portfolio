@@ -42,10 +42,10 @@ function VideoCard({
         
         {/* サブ動画用のオーバーレイ */}
         {!isMain && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-            <div className="bg-white/90 rounded-full p-3">
-              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M15 14h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+            <div className="bg-white/90 rounded-full p-2">
+              <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
               </svg>
             </div>
           </div>

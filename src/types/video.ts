@@ -5,36 +5,54 @@ export interface VideoData {
   description?: string;
 }
 
-// サンプル動画データ（実際のYouTube動画IDに置き換える）
+// 実際のYouTube動画データ
 export const sampleVideos: VideoData[] = [
   {
     id: '1',
     title: 'アニメソングリミックス #1',
-    videoId: 'dQw4w9WgXcQ', // サンプルID
-    description: '人気アニメソングのリミックス'
+    videoId: '_a5BD_-EiRk',
+    description: 'アニメソングリミックス作品'
   },
   {
     id: '2',
     title: 'アニメソングリミックス #2',
-    videoId: 'dQw4w9WgXcQ', // サンプルID
-    description: '最新アニメソングのリミックス'
+    videoId: 'CXPyI1PGDyM',
+    description: 'アニメソングリミックス作品'
   },
   {
     id: '3',
     title: 'アニメソングリミックス #3',
-    videoId: 'dQw4w9WgXcQ', // サンプルID
-    description: 'クラシックアニメソングのリミックス'
+    videoId: 'jWmZR8bIgcY',
+    description: 'アニメソングリミックス作品'
   },
   {
     id: '4',
     title: 'アニメソングリミックス #4',
-    videoId: 'dQw4w9WgXcQ', // サンプルID
-    description: 'ダンスミュージックリミックス'
+    videoId: 'AQlnM9W44Qs',
+    description: 'アニメソングリミックス作品'
   },
   {
     id: '5',
     title: 'アニメソングリミックス #5',
-    videoId: 'dQw4w9WgXcQ', // サンプルID
-    description: 'エレクトロニックリミックス'
+    videoId: 'Ogqxqqtc9Iw',
+    description: 'アニメソングリミックス作品'
+  },
+  {
+    id: '6',
+    title: 'アニメソングリミックス #6',
+    videoId: 'OueJmbrrJ24',
+    description: 'アニメソングリミックス作品'
+  },
+  {
+    id: '7',
+    title: 'アニメソングリミックス #7',
+    videoId: 'jceQcqYzo48',
+    description: 'アニメソングリミックス作品'
+  },
+  {
+    id: '8',
+    title: 'アニメソングリミックス #8',
+    videoId: 'rHh9iWKpQ0I',
+    description: 'アニメソングリミックス作品'
   }
 ];
