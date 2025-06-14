@@ -54,5 +54,11 @@ export const sampleVideos: VideoData[] = [
     title: 'アニメソングリミックス #8',
     videoId: 'rHh9iWKpQ0I',
     description: 'アニメソングリミックス作品'
+  },
+  {
+    id: '9',
+    title: 'アニメソングリミックス #9',
+    videoId: 'DsoP0gaVBKs',
+    description: 'アニメソングリミックス作品'
   }
 ];
