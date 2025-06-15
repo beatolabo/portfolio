@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import Image from 'next/image';
 
 export default function ProfileSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -235,14 +236,24 @@ export default function ProfileSection() {
                     'bg-gray-100 dark:bg-gray-900'
                   }`}
                 >
-                  <svg className={`w-6 h-6 ${
-                    platform.color === 'red' ? 'text-red-600 dark:text-red-400' :
-                    platform.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
-                    platform.color === 'gray' ? 'text-gray-600 dark:text-gray-300' :
-                    'text-gray-600 dark:text-gray-400'
-                  }`} fill="currentColor" viewBox="0 0 24 24">
-                    <path d={platform.icon}/>
-                  </svg>
+                  {platform.title === 'SoundCloud' ? (
+                    <Image 
+                      src="/soundcloud-24.svg" 
+                      alt="SoundCloud" 
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
+                  ) : (
+                    <svg className={`w-6 h-6 ${
+                      platform.color === 'red' ? 'text-red-600 dark:text-red-400' :
+                      platform.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
+                      platform.color === 'gray' ? 'text-gray-600 dark:text-gray-300' :
+                      'text-gray-600 dark:text-gray-400'
+                    }`} fill="currentColor" viewBox="0 0 24 24">
+                      <path d={platform.icon}/>
+                    </svg>
+                  )}
                 </div>
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white transition-colors duration-200 group-hover:text-blue-500">
                   {platform.title}

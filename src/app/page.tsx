@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import HeroSection from '@/components/sections/HeroSection';
 import ProfileSection from '@/components/sections/ProfileSection';
 import ContactSection from '@/components/sections/ContactSection';
+import Footer from '@/components/sections/Footer';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('hero');
@@ -253,6 +254,9 @@ export default function Home() {
           <ContactSection />
         </section>
       </main>
+
+      {/* フッター */}
+      <Footer />
 
       {/* スクロールアップボタン */}
       <motion.button
