@@ -18,7 +18,7 @@ export default function ProfileSection() {
   // スキルカードのスタッガードアニメーション設定
   const skillCardVariants = {
     hidden: { opacity: 0, y: 60, scale: 0.9 },
-    visible: (index: number) => ({
+    visible: {
       opacity: 1,
       y: 0,
       scale: 1,
@@ -26,10 +26,9 @@ export default function ProfileSection() {
         type: "spring" as const,
         stiffness: 100,
         damping: 15,
-        delay: index * 0.15,
         duration: 0.8
       }
-    })
+    }
   };
 
   // テキストのスタッガードアニメーション
@@ -197,12 +196,36 @@ export default function ProfileSection() {
                 href={platform.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg backdrop-blur-sm hover:no-underline group"
+                className="block bg-white dark:bg-gray-800 p-6 rounded-xl backdrop-blur-sm hover:no-underline group"
                 custom={index}
                 variants={skillCardVariants}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
+                animate={{
+                  scale: 1,
+                  y: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    delay: 0
+                  }
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  y: -8,
+                  boxShadow: "0 20px 40px -8px rgba(0, 0, 0, 0.15)",
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    delay: 0
+                  }
+                }}
+                style={{
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+                }}
               >
                 <div 
                   className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto ${
