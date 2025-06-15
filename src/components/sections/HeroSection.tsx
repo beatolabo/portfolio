@@ -93,7 +93,7 @@ export default function HeroSection() {
           style={{ y: textY }}
         >
           <motion.h1 
-            className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent"
+            className="text-4xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ 
@@ -102,11 +102,12 @@ export default function HeroSection() {
               delay: 0.2 
             }}
           >
-            Music Portfolio
+            beatolabo
           </motion.h1>
           
+          
           <motion.p 
-            className="text-xl text-gray-600 dark:text-gray-300"
+            className="text-base text-white/70"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ 
@@ -117,25 +118,6 @@ export default function HeroSection() {
           >
             アニメソングリミックスアーティスト
           </motion.p>
-          
-          {/* サブタイトル追加 */}
-          <motion.div
-            className="mt-6 flex justify-center space-x-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.8, 
-              ease: [0.23, 1, 0.32, 1],
-              delay: 0.8 
-            }}
-          >
-            <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
-              Music Production
-            </span>
-            <span className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium">
-              Remix Artist
-            </span>
-          </motion.div>
         </motion.div>
         
         {/* YouTube動画カルーセル */}
