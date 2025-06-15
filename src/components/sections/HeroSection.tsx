@@ -7,6 +7,7 @@ import { sampleVideos } from '@/types/video';
 
 export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isClient, setIsClient] = useState(false);
   const { scrollY } = useScroll();
   
   // パララックス効果用のトランスフォーム
@@ -18,8 +19,15 @@ export default function HeroSection() {
   const springX = useSpring(mousePosition.x, { stiffness: 100, damping: 10 });
   const springY = useSpring(mousePosition.y, { stiffness: 100, damping: 10 });
 
-  // マウス追従効果
+  // クライアントサイド判定
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // マウス追従効果 (クライアントサイドのみ)
+  useEffect(() => {
+    if (!isClient) return;
+    
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX - window.innerWidth / 2) * 0.01;
       const y = (e.clientY - window.innerHeight / 2) * 0.01;
@@ -28,7 +36,7 @@ export default function HeroSection() {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [isClient]);
 
   // フローティング要素のアニメーション
   const floatingVariants = {

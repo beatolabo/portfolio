@@ -8,6 +8,7 @@ import ContactSection from '@/components/sections/ContactSection';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('hero');
+  const [isClient, setIsClient] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -15,8 +16,15 @@ export default function Home() {
     restDelta: 0.001
   });
 
-  // 現在のセクションを検出
+  // クライアントサイドでのみ実行
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // 現在のセクションを検出 (クライアントサイドのみ)
+  useEffect(() => {
+    if (!isClient) return; // クライアントサイドでのみ実行
+    
     const sections = ['hero', 'profile', 'contact'];
     
     const observerOptions = {
@@ -46,7 +54,7 @@ export default function Home() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [isClient]);
 
   // セクションへのスムーズスクロール
   const scrollToSection = (sectionId: string) => {
@@ -68,12 +76,13 @@ export default function Home() {
       />
 
       {/* フローティングナビゲーション */}
-      <motion.nav
-        className="fixed top-8 right-8 z-40 hidden lg:block"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 2, duration: 0.8 }}
-      >
+      {isClient && (
+        <motion.nav
+          className="fixed top-8 right-8 z-40 hidden lg:block"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 2, duration: 0.8 }}
+        >
         <div className="bg-white/10 dark:bg-gray-800/10 backdrop-blur-md rounded-full p-2 shadow-xl border border-white/20">
           <div className="flex flex-col space-y-2">
             {[
@@ -117,7 +126,8 @@ export default function Home() {
             })}
           </div>
         </div>
-      </motion.nav>
+        </motion.nav>
+      )}
 
       {/* メインコンテンツ */}
       <main className="relative">
