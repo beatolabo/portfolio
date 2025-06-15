@@ -244,7 +244,7 @@ export default function ProfileSection() {
                     <path d={platform.icon}/>
                   </svg>
                 </div>
-                <h3 className="font-semibold text-lg transition-colors duration-200 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:via-blue-500 group-hover:to-blue-600 group-hover:bg-clip-text group-hover:text-transparent">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white transition-colors duration-200 group-hover:text-blue-500">
                   {platform.title}
                 </h3>
               </motion.a>
