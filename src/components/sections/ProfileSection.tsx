@@ -71,7 +71,7 @@ export default function ProfileSection() {
 
       <div className="container mx-auto px-4 py-12 relative z-10">
         <motion.div 
-          className="max-w-4xl mx-auto text-center"
+          className="max-w-3xl mx-auto text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
