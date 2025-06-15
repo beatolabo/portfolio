@@ -150,15 +150,13 @@ function ThumbnailVideoCard({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
-        <motion.h3 
+        <h3 
           className={`font-semibold text-gray-900 dark:text-white line-clamp-2 ${
             isMain ? 'text-lg' : 'text-sm'
           }`}
-          whileHover={{ color: isMain ? "#3b82f6" : "#6366f1" }}
-          transition={{ duration: 0.2 }}
         >
           {video.title}
-        </motion.h3>
+        </h3>
         {video.description && (
           <motion.p 
             className={`text-gray-600 dark:text-gray-300 mt-1 line-clamp-1 ${
