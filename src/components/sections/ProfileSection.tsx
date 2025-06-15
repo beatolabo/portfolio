@@ -23,7 +23,7 @@ export default function ProfileSection() {
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15,
         delay: index * 0.15,
@@ -39,7 +39,7 @@ export default function ProfileSection() {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 80,
         damping: 15,
         delay: index * 0.2,
@@ -215,20 +215,35 @@ export default function ProfileSection() {
                 viewport={{ once: true, margin: "-50px" }}
               >
                 <motion.div 
-                  className={`w-12 h-12 bg-${skill.color}-100 dark:bg-${skill.color}-900 rounded-lg flex items-center justify-center mb-4 mx-auto`}
+                  className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto ${
+                    skill.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900' :
+                    skill.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900' :
+                    skill.color === 'green' ? 'bg-green-100 dark:bg-green-900' :
+                    'bg-gray-100 dark:bg-gray-900'
+                  }`}
                   whileHover={{ 
                     scale: 1.1,
                     rotate: 5
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <svg className={`w-6 h-6 text-${skill.color}-600 dark:text-${skill.color}-400`} fill="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-6 h-6 ${
+                    skill.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+                    skill.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+                    skill.color === 'green' ? 'text-green-600 dark:text-green-400' :
+                    'text-gray-600 dark:text-gray-400'
+                  }`} fill="currentColor" viewBox="0 0 24 24">
                     <path d={skill.icon}/>
                   </svg>
                 </motion.div>
                 <motion.h3 
                   className="font-semibold text-lg mb-2"
-                  whileHover={{ color: `var(--color-${skill.color}-600)` }}
+                  whileHover={{ 
+                    color: skill.color === 'blue' ? '#2563eb' :
+                           skill.color === 'purple' ? '#9333ea' :
+                           skill.color === 'green' ? '#16a34a' :
+                           '#374151'
+                  }}
                   transition={{ duration: 0.2 }}
                 >
                   {skill.title}

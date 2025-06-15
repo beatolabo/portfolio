@@ -18,6 +18,12 @@ export default function HeroSection() {
   // スプリングアニメーション
   const springX = useSpring(mousePosition.x, { stiffness: 100, damping: 10 });
   const springY = useSpring(mousePosition.y, { stiffness: 100, damping: 10 });
+  
+  // スプリング値の変換
+  const springXNeg = useTransform(springX, (x) => x * -0.5);
+  const springYNeg = useTransform(springY, (y) => y * -0.5);
+  const springXSmall = useTransform(springX, (x) => x * 0.3);
+  const springYSmall = useTransform(springY, (y) => y * 0.3);
 
   // クライアントサイド判定
   useEffect(() => {
@@ -45,7 +51,7 @@ export default function HeroSection() {
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: [0.23, 1, 0.32, 1] as const
       }
     }
   };
@@ -70,14 +76,14 @@ export default function HeroSection() {
         variants={floatingVariants}
         animate="animate"
         initial={{ animationDelay: '1s' }}
-        style={{ x: springX * -0.5, y: springY * -0.5 }}
+        style={{ x: springXNeg, y: springYNeg }}
       />
       <motion.div
         className="absolute bottom-40 left-20 w-1 h-1 bg-blue-300 rounded-full opacity-80"
         variants={floatingVariants}
         animate="animate"
         initial={{ animationDelay: '2s' }}
-        style={{ x: springX * 0.3, y: springY * 0.3 }}
+        style={{ x: springXSmall, y: springYSmall }}
       />
       
       <div className="container mx-auto px-4 py-12 relative z-10">

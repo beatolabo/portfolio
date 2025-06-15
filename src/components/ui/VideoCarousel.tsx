@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { VideoData } from '@/types/video';
 
 interface VideoCarouselProps {
@@ -180,10 +180,10 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIframes, setLoadedIframes] = useState<Set<number>>(new Set());
 
-  // iframe読み込み状態を管理
-  const loadIframe = (index: number) => {
-    setLoadedIframes(prev => new Set(prev).add(index));
-  };
+  // iframe読み込み状態を管理（未使用だが将来の拡張用に保持）
+  // const loadIframe = (index: number) => {
+  //   setLoadedIframes(prev => new Set(prev).add(index));
+  // };
 
   // iframe読み込み状態の管理（メイン動画のみ保持）
   const updateVideoSelection = (newIndex: number) => {
@@ -216,9 +216,10 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
     updateVideoSelection(0);
   }, []);
 
-  const currentVideo = videos[currentIndex];
-  const prevVideoData = videos[prevIndex];
-  const nextVideoData = videos[nextIndex];
+  // 未使用変数をコメントアウト（将来の拡張用に保持）
+  // const currentVideo = videos[currentIndex];
+  // const prevVideoData = videos[prevIndex];
+  // const nextVideoData = videos[nextIndex];
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
