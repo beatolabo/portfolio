@@ -240,12 +240,14 @@ export default function ProfileSection() {
                     <Image 
                       src="/soundcloud-24.svg" 
                       alt="SoundCloud" 
-                      width={24}
-                      height={24}
+                      width={29}
+                      height={29}
                       className="object-contain"
                     />
                   ) : (
-                    <svg className={`w-6 h-6 ${
+                    <svg className={`${
+                      platform.title === 'GitHub' ? 'w-7 h-7' : 'w-6 h-6'
+                    } ${
                       platform.color === 'red' ? 'text-red-600 dark:text-red-400' :
                       platform.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
                       platform.color === 'gray' ? 'text-gray-600 dark:text-gray-300' :

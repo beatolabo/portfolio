@@ -117,8 +117,8 @@ export default function ContactSection() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               Contact
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              ご質問・お仕事のご依頼などお気軽にお問い合わせください
+            <p className="text-lg text-gray-600 dark:text-gray-300" style={{ wordBreak: 'keep-all', overflowWrap: 'anywhere', textWrap: 'balance' }}>
+              ご質問・ご相談、お気軽にお問い合わせください。音楽だけでなく技術的な話でも大歓迎です。DTM仲間も募集しています。
             </p>
           </motion.div>
 
@@ -411,9 +411,6 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              通常24時間以内にご返信いたします
-            </p>
           </motion.div>
         </motion.div>
       </div>
