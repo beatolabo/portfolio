@@ -98,38 +98,21 @@ export default function ProfileSection() {
             }}
           >
             <motion.div 
-              className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-full shadow-2xl flex items-center justify-center"
+              className="w-full h-full bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden"
               whileHover={{
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #3b82f6 100%)"
+                background: "#f8fafc"
               }}
               transition={{ duration: 0.3 }}
             >
-              <motion.svg 
-                className="w-20 h-20 text-white" 
-                fill="currentColor" 
-                viewBox="0 0 24 24"
-                whileHover={{ 
-                  scale: 1.1,
-                  rotate: 5
-                }}
+              <motion.img 
+                src="/icon.png"
+                alt="beatolabo アイコン"
+                className="w-32 h-32 object-contain scale-150"
+                loading="eager"
                 transition={{ type: "spring", stiffness: 300 }}
-              >
-                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-              </motion.svg>
+              />
             </motion.div>
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-20 blur-lg"
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.2, 0.3, 0.2]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
           </motion.div>
 
           {/* メインタイトル */}
