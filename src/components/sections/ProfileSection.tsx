@@ -197,32 +197,20 @@ export default function ProfileSection() {
                 href={platform.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg backdrop-blur-sm transition-transform hover:no-underline"
+                className="block bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg backdrop-blur-sm hover:no-underline"
                 custom={index}
                 variants={skillCardVariants}
                 initial="hidden"
                 whileInView="visible"
-                whileHover={{ 
-                  y: -8,
-                  scale: 1.05,
-                  boxShadow: "0 20px 40px -8px rgba(0, 0, 0, 0.15)",
-                  transition: { type: "spring", stiffness: 300, damping: 20 }
-                }}
                 viewport={{ once: true, margin: "-50px" }}
               >
-                <motion.div 
+                <div 
                   className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto ${
                     platform.color === 'red' ? 'bg-red-100 dark:bg-red-900' :
                     platform.color === 'orange' ? 'bg-orange-100 dark:bg-orange-900' :
                     platform.color === 'gray' ? 'bg-gray-100 dark:bg-gray-700' :
                     'bg-gray-100 dark:bg-gray-900'
                   }`}
-                  whileHover={{ 
-                    scale: 1.1,
-                    rotate: 5,
-                    transition: { duration: 0.2 }
-                  }}
-                  transition={{ type: "spring", stiffness: 300 }}
                 >
                   <svg className={`w-6 h-6 ${
                     platform.color === 'red' ? 'text-red-600 dark:text-red-400' :
@@ -232,19 +220,10 @@ export default function ProfileSection() {
                   }`} fill="currentColor" viewBox="0 0 24 24">
                     <path d={platform.icon}/>
                   </svg>
-                </motion.div>
-                <motion.h3 
-                  className="font-semibold text-lg mb-2"
-                  whileHover={{ 
-                    color: platform.color === 'red' ? '#dc2626' :
-                           platform.color === 'orange' ? '#ea580c' :
-                           platform.color === 'gray' ? '#4b5563' :
-                           '#374151'
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
+                </div>
+                <h3 className="font-semibold text-lg mb-2">
                   {platform.title}
-                </motion.h3>
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {platform.description}
                 </p>
