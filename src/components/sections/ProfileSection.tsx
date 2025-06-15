@@ -196,7 +196,7 @@ export default function ProfileSection() {
                 href={platform.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-white dark:bg-gray-800 p-6 rounded-xl backdrop-blur-sm hover:no-underline group"
+                className="block bg-white dark:bg-gray-800 pt-8 pb-6 px-6 rounded-xl backdrop-blur-sm hover:no-underline group"
                 custom={index}
                 variants={skillCardVariants}
                 initial="hidden"
@@ -244,12 +244,9 @@ export default function ProfileSection() {
                     <path d={platform.icon}/>
                   </svg>
                 </div>
-                <h3 className="font-semibold text-lg mb-2 transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                <h3 className="font-semibold text-lg transition-colors duration-200 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:via-blue-500 group-hover:to-blue-600 group-hover:bg-clip-text group-hover:text-transparent">
                   {platform.title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {platform.description}
-                </p>
               </motion.a>
             ))}
           </motion.div>
