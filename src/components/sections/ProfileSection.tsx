@@ -134,11 +134,11 @@ export default function ProfileSection() {
           </motion.div>
 
           {/* 自己紹介テキスト */}
-          <motion.div className="space-y-6 text-lg text-gray-700 dark:text-gray-300">
+          <motion.div className="space-y-6 text-lg text-gray-700 dark:text-gray-300" style={{ wordBreak: 'keep-all', overflowWrap: 'anywhere', textWrap: 'balance' }}>
             {[
-              "アニメソングリミックスアーティストとして活動している。多様な楽曲を独自のスタイルでリミックスし、新しい音楽体験を提供している。",
-              "クラシックなアニメソングから最新のヒット曲まで幅広く扱い、電子音楽の技術を駆使したサウンドデザインが特徴である。",
-              "YouTubeを中心に作品を発表し、音楽を通じて多くの人に新しい感動と体験を届けることを目指している。"
+              "beatolaboはアニメソングリミックスを中心に音楽制作をしている。大好きなアニメの世界観を音楽に込めたり、異なる楽曲をマッシュアップすることで、聴く人に新しい感動を届けている。",
+              "また、音楽制作の枠を超え、AI技術・3Dビジュアル・プログラミングを駆使した実験的なアプローチを重視している。テクノロジーと芸術の融合により、従来の音楽体験を拡張する作品を追求している。",
+              "様々なプラットフォームで活動中だ。もしよろしければフォローしていただけると、とても励みになる。"
             ].map((text, index) => (
               <motion.p 
                 key={index}
