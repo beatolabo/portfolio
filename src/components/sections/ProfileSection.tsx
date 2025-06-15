@@ -77,6 +77,24 @@ export default function ProfileSection() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}
         >
+          {/* メインタイトル */}
+          <motion.h2 
+            className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent"
+            style={{ y: textY }}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 80,
+              damping: 15,
+              delay: 0.2,
+              duration: 1
+            }}
+            viewport={{ once: true }}
+          >
+            Profile
+          </motion.h2>
+
           {/* アイコン */}
           <motion.div 
             className="relative w-40 h-40 mx-auto mb-8"
@@ -87,7 +105,7 @@ export default function ProfileSection() {
               type: "spring",
               stiffness: 100,
               damping: 15,
-              delay: 0.2,
+              delay: 0.4,
               duration: 1.2
             }}
             viewport={{ once: true }}
@@ -114,24 +132,6 @@ export default function ProfileSection() {
               />
             </motion.div>
           </motion.div>
-
-          {/* メインタイトル */}
-          <motion.h2 
-            className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-            style={{ y: textY }}
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-              type: "spring",
-              stiffness: 80,
-              damping: 15,
-              delay: 0.4,
-              duration: 1
-            }}
-            viewport={{ once: true }}
-          >
-            Profile
-          </motion.h2>
 
           {/* 自己紹介テキスト */}
           <motion.div className="space-y-6 text-lg text-gray-700 dark:text-gray-300">

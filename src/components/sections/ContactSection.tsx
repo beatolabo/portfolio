@@ -114,7 +114,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               Contact
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300">
