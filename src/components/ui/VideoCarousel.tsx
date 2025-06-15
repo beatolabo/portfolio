@@ -351,7 +351,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           {videos.map((_, index) => (
             <motion.button
               key={index}
-              className="rounded-full"
+              className="rounded-full p-1"
               onClick={() => goToVideo(index)}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
@@ -361,8 +361,8 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
                 className="rounded-full"
                 animate={{
                   backgroundColor: index === currentIndex ? "#3b82f6" : "#d1d5db",
-                  width: index === currentIndex ? "32px" : "8px",
-                  height: "8px"
+                  width: index === currentIndex ? "36px" : "10px",
+                  height: "10px"
                 }}
                 transition={{ 
                   type: "spring", 
