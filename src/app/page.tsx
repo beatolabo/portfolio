@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import HeroSection from '@/components/sections/HeroSection';
 import ProfileSection from '@/components/sections/ProfileSection';
@@ -165,12 +165,15 @@ export default function Home() {
           </motion.button>
 
           {/* モバイル用メニュードロワー */}
-          <motion.div
-            className="fixed top-0 right-0 h-screen w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-40 lg:hidden shadow-2xl"
-            initial={{ x: '100%' }}
-            animate={{ x: isMobileMenuOpen ? 0 : '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                className="fixed top-0 right-0 h-screen w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-40 lg:hidden shadow-2xl"
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
             <div className="flex flex-col h-full pt-20 px-6">
               <div className="flex flex-col space-y-4">
                 {[
@@ -215,20 +218,24 @@ export default function Home() {
                     </motion.button>
                   );
                 })}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* モバイルメニュー開閉時のオーバーレイ */}
-          {isMobileMenuOpen && (
-            <motion.div
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-          )}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+            )}
+          </AnimatePresence>
         </>
       )}
 
