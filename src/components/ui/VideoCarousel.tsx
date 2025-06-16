@@ -135,7 +135,7 @@ function ThumbnailVideoCard({
               whileHover={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-800 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
               </svg>
             </motion.div>
