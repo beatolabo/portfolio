@@ -108,7 +108,6 @@ export default function Home() {
                       whileTap={{ scale: 0.95 }}
                       title={item.label}
                       animate={{
-                        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.35)' : undefined,
                         borderColor: isActive ? 'rgba(59, 130, 246, 0.3)' : 'transparent'
                       }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}

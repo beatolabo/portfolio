@@ -130,7 +130,7 @@ function ThumbnailVideoCard({
             transition={{ duration: 0.2 }}
           >
             <motion.div 
-              className="bg-white/90 backdrop-blur-sm rounded-full p-2"
+              className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2"
               initial={{ scale: 0.8, opacity: 0 }}
               whileHover={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -297,7 +297,6 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
           whileHover={{ 
             scale: 1.1,
-            backgroundColor: "#f8fafc",
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}
@@ -319,7 +318,6 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
           whileHover={{ 
             scale: 1.1,
-            backgroundColor: "#f8fafc",
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}

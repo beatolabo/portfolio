@@ -93,7 +93,7 @@ export default function HeroSection() {
           style={{ y: textY }}
         >
           <motion.h1 
-            className="text-4xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent"
+            className="text-4xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ 

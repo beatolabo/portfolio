@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import emailjs from '@emailjs/browser';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface FormData {
   name: string;
@@ -114,9 +115,9 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+            <SectionTitle delay={0.2}>
               Contact
-            </h2>
+            </SectionTitle>
             <p className="text-lg text-gray-600 dark:text-gray-300" style={{ wordBreak: 'keep-all', overflowWrap: 'anywhere', textWrap: 'balance' }}>
               ご質問・ご相談、お気軽にお問い合わせください。音楽だけでなく技術的な話でも大歓迎です。DTM仲間も募集しています。
             </p>

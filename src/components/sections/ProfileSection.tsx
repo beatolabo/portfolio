@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Image from 'next/image';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 export default function ProfileSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -78,22 +79,11 @@ export default function ProfileSection() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {/* メインタイトル */}
-          <motion.h2 
-            className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent"
-            style={{ y: textY }}
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-              type: "spring",
-              stiffness: 80,
-              damping: 15,
-              delay: 0.2,
-              duration: 1
-            }}
-            viewport={{ once: true }}
-          >
-            Profile
-          </motion.h2>
+          <motion.div style={{ y: textY }}>
+            <SectionTitle delay={0.2}>
+              Profile
+            </SectionTitle>
+          </motion.div>
 
           {/* アイコン */}
           <motion.div 
@@ -116,7 +106,7 @@ export default function ProfileSection() {
             }}
           >
             <motion.div 
-              className="w-full h-full bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden"
+              className="w-full h-full bg-white dark:bg-gray-800 rounded-full shadow-2xl flex items-center justify-center overflow-hidden"
               whileHover={{
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
                 background: "#f8fafc"
