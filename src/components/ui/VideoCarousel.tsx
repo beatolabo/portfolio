@@ -310,6 +310,14 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [loadedIframes, setLoadedIframes] = useState<Set<number>>(new Set());
   const { inViewItems, observeElement } = useIntersectionObserver();
 
+  // キーボードナビゲーション対応
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   // iframe読み込み状態を管理（未使用だが将来の拡張用に保持）
   // const loadIframe = (index: number) => {
   //   setLoadedIframes(prev => new Set(prev).add(index));
@@ -461,12 +469,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
       >
         <motion.button
           onClick={prevVideo}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              prevVideo();
-            }
-          }}
+          onKeyDown={(e) => handleKeyDown(e, prevVideo)}
           className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
@@ -491,12 +494,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         </motion.button>
         <motion.button
           onClick={nextVideo}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              nextVideo();
-            }
-          }}
+          onKeyDown={(e) => handleKeyDown(e, nextVideo)}
           className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
@@ -536,12 +534,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
               key={index}
               className="rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => goToVideo(index)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  goToVideo(index);
-                }
-              }}
+              onKeyDown={(e) => handleKeyDown(e, () => goToVideo(index))}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 300 }}
