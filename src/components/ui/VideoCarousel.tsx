@@ -26,6 +26,16 @@ function ThumbnailVideoCard({
     <motion.div
       className="cursor-pointer group"
       onClick={onClick}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
+      tabIndex={isVisible ? 0 : -1}
+      role="button"
+      aria-label={`${video.title}を再生${isMain ? '（メイン動画）' : ''}`}
+      aria-pressed={isMain}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ 
         opacity: isVisible ? 1 : 0.3, 
@@ -177,6 +187,14 @@ function ThumbnailVideoCard({
 export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIframes, setLoadedIframes] = useState<Set<number>>(new Set());
+  
+  // キーボードナビゲーション対応
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
 
   // iframe読み込み状態を管理（未使用だが将来の拡張用に保持）
   // const loadIframe = (index: number) => {
@@ -222,10 +240,20 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
       {/* プリロード式レイアウト：全動画を同時レンダリング、表示切り替えのみ */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
+      <div 
+        className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center"
+        role="region"
+        aria-label="動画カルーセル"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         
         {/* 左の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block relative">
+        <div 
+          className="hidden lg:block relative"
+          role="group"
+          aria-label="前の動画"
+        >
           {videos.map((video, index) => {
             const isPrevVideo = index === prevIndex;
             return (
@@ -245,7 +273,11 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         </div>
 
         {/* メイン動画（中央・3カラム分） */}
-        <div className="lg:col-span-3 relative">
+        <div 
+          className="lg:col-span-3 relative"
+          role="main"
+          aria-label={`現在の動画: ${videos[currentIndex]?.title || ''}`}
+        >
           {videos.map((video, index) => {
             const isCurrentVideo = index === currentIndex;
             return (
@@ -265,7 +297,11 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         </div>
 
         {/* 右の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block relative">
+        <div 
+          className="hidden lg:block relative"
+          role="group"
+          aria-label="次の動画"
+        >
           {videos.map((video, index) => {
             const isNextVideo = index === nextIndex;
             return (
@@ -291,16 +327,21 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
+        role="group"
+        aria-label="動画ナビゲーション"
       >
         <motion.button
           onClick={prevVideo}
-          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
+          onKeyDown={(e) => handleKeyDown(e, prevVideo)}
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          aria-label="前の動画"
+          type="button"
         >
           <motion.svg 
             className="w-6 h-6 text-gray-600 dark:text-gray-300" 
@@ -309,19 +350,23 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
             viewBox="0 0 24 24"
             whileHover={{ x: -2 }}
             transition={{ type: "spring", stiffness: 400 }}
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </motion.svg>
         </motion.button>
         <motion.button
           onClick={nextVideo}
-          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
+          onKeyDown={(e) => handleKeyDown(e, nextVideo)}
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          aria-label="次の動画"
+          type="button"
         >
           <motion.svg 
             className="w-6 h-6 text-gray-600 dark:text-gray-300" 
@@ -330,6 +375,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
             viewBox="0 0 24 24"
             whileHover={{ x: 2 }}
             transition={{ type: "spring", stiffness: 400 }}
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </motion.svg>
@@ -343,15 +389,23 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.5 }}
+          role="tablist"
+          aria-label="動画選択"
         >
-          {videos.map((_, index) => (
+          {videos.map((video, index) => (
             <motion.button
               key={index}
-              className="rounded-full p-1"
+              className="rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => goToVideo(index)}
+              onKeyDown={(e) => handleKeyDown(e, () => goToVideo(index))}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 300 }}
+              role="tab"
+              aria-selected={index === currentIndex}
+              aria-controls={`video-panel-${index}`}
+              aria-label={`動画 ${index + 1}: ${video.title}`}
+              type="button"
             >
               <motion.div
                 className="rounded-full"

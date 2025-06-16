@@ -86,9 +86,11 @@ export default function Home() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 2, duration: 0.8 }}
+            role="navigation"
+            aria-label="ページナビゲーション"
           >
             <div className="bg-white/10 dark:bg-gray-800/10 backdrop-blur-md rounded-full p-2 shadow-xl border border-white/20">
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2" role="list">
                 {[
                   { id: 'hero', label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
                   { id: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
@@ -99,7 +101,13 @@ export default function Home() {
                     <motion.button
                       key={item.id}
                       onClick={() => scrollToSection(item.id)}
-                      className={`p-3 rounded-full transition-all duration-300 group relative ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          scrollToSection(item.id);
+                        }
+                      }}
+                      className={`p-3 rounded-full transition-all duration-300 group relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                         isActive 
                           ? 'bg-white/30 dark:bg-gray-600/30 text-gray-800 dark:text-white' 
                           : 'bg-white/20 dark:bg-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-600/30 text-gray-800 dark:text-white'
@@ -107,6 +115,10 @@ export default function Home() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       title={item.label}
+                      aria-label={`${item.label}セクションに移動`}
+                      aria-current={isActive ? 'page' : undefined}
+                      type="button"
+                      role="listitem"
                       animate={{
                         borderColor: isActive ? 'rgba(59, 130, 246, 0.3)' : 'transparent'
                       }}
@@ -121,6 +133,7 @@ export default function Home() {
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
                         transition={{ duration: 0.3 }}
+                        aria-hidden="true"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                       </motion.svg>
@@ -133,13 +146,23 @@ export default function Home() {
 
           {/* モバイル用ハンバーガーメニューボタン */}
           <motion.button
-            className="fixed top-6 right-6 z-50 lg:hidden p-3 bg-white/10 dark:bg-gray-800/10 backdrop-blur-md rounded-full shadow-xl border border-white/20"
+            className="fixed top-6 right-6 z-50 lg:hidden p-3 bg-white/10 dark:bg-gray-800/10 backdrop-blur-md rounded-full shadow-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+              }
+            }}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 2, duration: 0.8 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            aria-label={isMobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+            type="button"
           >
             <motion.div
               animate={isMobileMenuOpen ? "open" : "closed"}
@@ -154,6 +177,7 @@ export default function Home() {
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -173,9 +197,12 @@ export default function Home() {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                id="mobile-menu"
+                role="navigation"
+                aria-label="モバイルナビゲーション"
               >
             <div className="flex flex-col h-full pt-20 px-6">
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4" role="list">
                 {[
                   { id: 'hero', label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
                   { id: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
@@ -189,7 +216,14 @@ export default function Home() {
                         scrollToSection(item.id);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-300 text-left ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          scrollToSection(item.id);
+                          setIsMobileMenuOpen(false);
+                        }
+                      }}
+                      className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                         isActive 
                           ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
                           : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-800 dark:text-white'
@@ -205,12 +239,17 @@ export default function Home() {
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      aria-label={`${item.label}セクションに移動`}
+                      aria-current={isActive ? 'page' : undefined}
+                      type="button"
+                      role="listitem"
                     >
                       <svg 
                         className="w-6 h-6" 
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                       </svg>
