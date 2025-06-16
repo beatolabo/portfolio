@@ -303,7 +303,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
           <motion.svg 
-            className="w-6 h-6" 
+            className="w-6 h-6 text-gray-600 dark:text-gray-300" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -324,7 +324,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
           <motion.svg 
-            className="w-6 h-6" 
+            className="w-6 h-6 text-gray-600 dark:text-gray-300" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
