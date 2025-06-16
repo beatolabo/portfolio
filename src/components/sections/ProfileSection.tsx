@@ -238,8 +238,10 @@ const ProfileSection = React.memo(() => {
                       } ${
                         platform.color === 'red' ? 'text-red-600 dark:text-red-400' :
                         platform.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
-                        platform.color === 'gray' ? 'text-gray-600 dark:text-gray-300' :
+                        platform.color === 'gray' ? 'text-gray-600 dark:text-gray-300 scale-90' :
                         'text-gray-600 dark:text-gray-400'
+                      } ${
+                        platform.title === 'niconico' ? 'scale-90' : ''
                       }`} fill="currentColor" viewBox="0 0 24 24">
                         <path d={platform.icon}/>
                       </svg>
@@ -296,7 +298,7 @@ const ProfileSection = React.memo(() => {
                   whileHover={{ rotate: -5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <svg className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 scale-90" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
                 </motion.div>
