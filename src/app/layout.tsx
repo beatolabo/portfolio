@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://beatolabo.pages.dev' : 'http://localhost:3000'),
   title: "beatolabo's Music Portfolio",
   description: "音楽制作ポートフォリオ。 今まで作成した楽曲や、自己紹介などを掲載しております",
   keywords: "音楽制作, DTM, 作曲, リミックス, ポートフォリオ",
