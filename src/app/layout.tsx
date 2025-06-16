@@ -24,11 +24,20 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     siteName: "beatolabo's Music Portfolio",
+    images: [
+      {
+        url: "/icon.png",
+        width: 1200,
+        height: 630,
+        alt: "beatolabo Music Portfolio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "beatolabo's Music Portfolio",
     description: "音楽制作ポートフォリオ - 今まで作成した楽曲や、自己紹介などを掲載しております",
+    images: ["/icon.png"],
   },
   robots: {
     index: true,
