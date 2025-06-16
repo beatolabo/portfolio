@@ -60,26 +60,26 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* 動的背景 */}
       <motion.div 
-        className="absolute -top-64 -bottom-64 left-0 right-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800"
+        className="absolute -top-64 -bottom-64 left-0 right-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 gpu-accelerated"
         style={{ y: backgroundY }}
       />
       
       {/* フローティング装飾要素 */}
       <motion.div
-        className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full opacity-60"
+        className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full opacity-60 gpu-accelerated"
         variants={floatingVariants}
         animate="animate"
         style={{ x: springX, y: springY }}
       />
       <motion.div
-        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full opacity-40"
+        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full opacity-40 gpu-accelerated"
         variants={floatingVariants}
         animate="animate"
         initial={{ animationDelay: '1s' }}
         style={{ x: springXNeg, y: springYNeg }}
       />
       <motion.div
-        className="absolute bottom-40 left-20 w-1 h-1 bg-blue-300 rounded-full opacity-80"
+        className="absolute bottom-40 left-20 w-1 h-1 bg-blue-300 rounded-full opacity-80 gpu-accelerated"
         variants={floatingVariants}
         animate="animate"
         initial={{ animationDelay: '2s' }}
@@ -89,7 +89,7 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 py-12 relative z-10">
         {/* ヘッダーテキスト */}
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-12 animate-performance"
           style={{ y: textY }}
         >
           <motion.h1 
@@ -122,7 +122,7 @@ export default function HeroSection() {
         
         {/* YouTube動画カルーセル */}
         <motion.div 
-          className="w-full"
+          className="w-full animate-performance"
           style={{ y: carouselY }}
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}

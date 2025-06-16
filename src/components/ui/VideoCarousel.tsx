@@ -28,7 +28,7 @@ function ThumbnailVideoCard({
   const [iframeError, setIframeError] = useState(false);
   return (
     <motion.div
-      className="cursor-pointer group"
+      className="cursor-pointer group gpu-accelerated"
       onClick={onClick}
       onKeyDown={onClick ? (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
