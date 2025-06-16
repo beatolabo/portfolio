@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { VideoData } from '@/types/video';
 
@@ -8,20 +8,24 @@ interface VideoCarouselProps {
   videos: VideoData[];
 }
 
-// サムネイル/iframe切り替え式動画カード
+// サムネイル/iframe切り替え式動画カード（遅延読み込み・エラーハンドリング対応）
 function ThumbnailVideoCard({ 
   video, 
   isMain = false, 
   isVisible = true,
   hasLoadedIframe = false,
+  isInViewport = false,
   onClick 
 }: { 
   video: VideoData; 
   isMain?: boolean; 
   isVisible?: boolean;
   hasLoadedIframe?: boolean;
+  isInViewport?: boolean;
   onClick?: () => void;
 }) {
+  const [imageError, setImageError] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
   return (
     <motion.div
       className="cursor-pointer group"
@@ -79,54 +83,114 @@ function ThumbnailVideoCard({
         {/* 16:9 アスペクト比を維持 */}
         <div className="relative w-full pb-[56.25%]">
           {hasLoadedIframe ? (
-            // iframe表示（読み込み済み）
-            <motion.iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
-              title={video.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="eager"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-          ) : (
-            // サムネイル表示（軽量）
-            <>
-              <motion.img
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
-                alt={video.title}
-                loading="lazy"
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-              />
-              {/* 再生ボタンオーバーレイ */}
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <motion.div 
-                  className="bg-red-600 rounded-full p-4"
-                  whileHover={{ 
-                    scale: 1.1,
-                    backgroundColor: "#dc2626",
-                    transition: { duration: 0.2 }
-                  }}
-                  whileTap={{ scale: 0.95 }}
+            // iframe表示（読み込み済み・エラーハンドリング対応）
+            iframeError ? (
+              // iframe読み込み失敗時の代替表示
+              <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                <motion.div
+                  className="text-center p-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <motion.svg 
-                    className="w-8 h-8 text-white ml-1" 
-                    fill="currentColor" 
-                    viewBox="0 0 24 24"
-                    initial={{ scale: 1 }}
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    <path d="M8 5v14l11-7z"/>
-                  </motion.svg>
+                  <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-3">
+                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">動画を読み込めませんでした</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">YouTubeで直接視聴してください</p>
                 </motion.div>
               </div>
+            ) : (
+              <motion.iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
+                title={video.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="eager"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onError={() => setIframeError(true)}
+              />
+            )
+          ) : (
+            // サムネイル表示（遅延読み込み・エラーハンドリング対応）
+            <>
+              {imageError ? (
+                // サムネイル読み込み失敗時の代替表示
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                  <motion.div
+                    className="text-center p-4"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                      <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">サムネイル読み込み中...</p>
+                  </motion.div>
+                </div>
+              ) : isInViewport ? (
+                <motion.img
+                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
+                  alt={video.title}
+                  loading="lazy"
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                // プレースホルダー（軽量）
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <motion.div
+                    className="flex flex-col items-center space-y-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Loading...</p>
+                  </motion.div>
+                </div>
+              )}
+              {/* 再生ボタンオーバーレイ（サムネイル読み込み済み & エラー時は非表示） */}
+              {isInViewport && !imageError && (
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <motion.div 
+                    className="bg-red-600 rounded-full p-4"
+                    whileHover={{ 
+                      scale: 1.1,
+                      backgroundColor: "#dc2626",
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <motion.svg 
+                      className="w-8 h-8 text-white ml-1" 
+                      fill="currentColor" 
+                      viewBox="0 0 24 24"
+                      initial={{ scale: 1 }}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <path d="M8 5v14l11-7z"/>
+                    </motion.svg>
+                  </motion.div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -184,10 +248,68 @@ function ThumbnailVideoCard({
   );
 }
 
+// Intersection Observer用のカスタムフック
+function useIntersectionObserver() {
+  const [inViewItems, setInViewItems] = useState<Set<string>>(new Set());
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const elementRefs = useRef<Map<string, Element>>(new Map());
+
+  const observeElement = useCallback((key: string, element: Element | null) => {
+    if (!element) return;
+
+    // 既存の要素を削除
+    const existingElement = elementRefs.current.get(key);
+    if (existingElement && observerRef.current) {
+      observerRef.current.unobserve(existingElement);
+    }
+
+    // 新しい要素を追加
+    elementRefs.current.set(key, element);
+    if (observerRef.current) {
+      observerRef.current.observe(element);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer を初期化
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const key = entry.target.getAttribute('data-video-key');
+          if (key) {
+            setInViewItems(prev => {
+              const newSet = new Set(prev);
+              if (entry.isIntersecting) {
+                newSet.add(key);
+              } else {
+                newSet.delete(key);
+              }
+              return newSet;
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '50px',
+        threshold: 0.1
+      }
+    );
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  return { inViewItems, observeElement };
+}
+
 export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIframes, setLoadedIframes] = useState<Set<number>>(new Set());
-  
+  const { inViewItems, observeElement } = useIntersectionObserver();
+
   // キーボードナビゲーション対応
   const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -227,7 +349,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const prevIndex = currentIndex === 0 ? videos.length - 1 : currentIndex - 1;
   const nextIndex = currentIndex === videos.length - 1 ? 0 : currentIndex + 1;
 
-  // 初回のメイン動画を読み込み
+  // 初回のメイン動画を読み込み + 現在表示中の動画を強制的にビューポート内として扱う
   useEffect(() => {
     updateVideoSelection(0);
   }, []);
@@ -256,15 +378,20 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         >
           {videos.map((video, index) => {
             const isPrevVideo = index === prevIndex;
+            const videoKey = `prev-${video.id}`;
+            const isInViewport = inViewItems.has(videoKey) || isPrevVideo; // 表示中は強制的にtrue
             return (
               <div
-                key={`prev-${video.id}`}
+                key={videoKey}
                 className={`${isPrevVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+                data-video-key={videoKey}
+                ref={(el) => observeElement(videoKey, el)}
               >
                 <ThumbnailVideoCard 
                   video={video} 
                   isVisible={isPrevVideo}
                   hasLoadedIframe={loadedIframes.has(index)}
+                  isInViewport={isInViewport}
                   onClick={() => goToVideo(index)}
                 />
               </div>
@@ -280,16 +407,21 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         >
           {videos.map((video, index) => {
             const isCurrentVideo = index === currentIndex;
+            const videoKey = `main-${video.id}`;
+            const isInViewport = inViewItems.has(videoKey) || isCurrentVideo; // 表示中は強制的にtrue
             return (
               <div
-                key={`main-${video.id}`}
+                key={videoKey}
                 className={`${isCurrentVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+                data-video-key={videoKey}
+                ref={(el) => observeElement(videoKey, el)}
               >
                 <ThumbnailVideoCard 
                   video={video} 
                   isMain={true}
                   isVisible={isCurrentVideo}
                   hasLoadedIframe={loadedIframes.has(index)}
+                  isInViewport={isInViewport}
                 />
               </div>
             );
@@ -304,15 +436,20 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         >
           {videos.map((video, index) => {
             const isNextVideo = index === nextIndex;
+            const videoKey = `next-${video.id}`;
+            const isInViewport = inViewItems.has(videoKey) || isNextVideo; // 表示中は強制的にtrue
             return (
               <div
-                key={`next-${video.id}`}
+                key={videoKey}
                 className={`${isNextVideo ? 'relative' : 'absolute inset-0 invisible'}`}
+                data-video-key={videoKey}
+                ref={(el) => observeElement(videoKey, el)}
               >
                 <ThumbnailVideoCard 
                   video={video} 
                   isVisible={isNextVideo}
                   hasLoadedIframe={loadedIframes.has(index)}
+                  isInViewport={isInViewport}
                   onClick={() => goToVideo(index)}
                 />
               </div>
