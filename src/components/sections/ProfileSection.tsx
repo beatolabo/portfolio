@@ -1,11 +1,12 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import Image from 'next/image';
 import SectionTitle from '@/components/ui/SectionTitle';
+import React from 'react';
 
-export default function ProfileSection() {
+const ProfileSection = React.memo(() => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -17,8 +18,8 @@ export default function ProfileSection() {
   const iconY = useTransform(scrollYProgress, [0, 1], [-50, 50]);
   const textY = useTransform(scrollYProgress, [0, 1], [-30, 30]);
 
-  // スキルカードのスタッガードアニメーション設定
-  const skillCardVariants = {
+  // スキルカードのスタッガードアニメーション設定（useMemoで最適化）
+  const skillCardVariants = useMemo(() => ({
     hidden: { opacity: 0, y: 60, scale: 0.9 },
     visible: {
       opacity: 1,
@@ -31,10 +32,10 @@ export default function ProfileSection() {
         duration: 0.8
       }
     }
-  };
+  }), []);
 
-  // テキストのスタッガードアニメーション
-  const textVariants = {
+  // テキストのスタッガードアニメーション（useMemoで最適化）
+  const textVariants = useMemo(() => ({
     hidden: { opacity: 0, y: 30 },
     visible: (index: number) => ({
       opacity: 1,
@@ -47,7 +48,7 @@ export default function ProfileSection() {
         duration: 0.8
       }
     })
-  };
+  }), []);
 
   return (
     <section 
@@ -113,12 +114,14 @@ export default function ProfileSection() {
               }}
               transition={{ duration: 0.3 }}
             >
-              <motion.img 
+              <Image 
                 src="/icon.png"
                 alt="beatolabo アイコン"
+                width={128}
+                height={128}
                 className="w-32 h-32 object-contain scale-150"
-                loading="eager"
-                transition={{ type: "spring", stiffness: 300 }}
+                priority
+                sizes="(max-width: 768px) 96px, 128px"
               />
             </motion.div>
           </motion.div>
@@ -227,6 +230,7 @@ export default function ProfileSection() {
                         width={29}
                         height={29}
                         className="object-contain"
+                        sizes="24px"
                       />
                     ) : (
                       <svg className={`${
@@ -303,4 +307,8 @@ export default function ProfileSection() {
       </div>
     </section>
   );
-}
+});
+
+ProfileSection.displayName = 'ProfileSection';
+
+export default ProfileSection;
