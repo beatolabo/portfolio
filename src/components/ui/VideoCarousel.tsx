@@ -8,7 +8,7 @@ interface VideoCarouselProps {
   videos: VideoData[];
 }
 
-// サムネイル/iframe切り替え式動画カード
+// サムネイル/iframe切り替え式動画カード（エラーハンドリング対応）
 function ThumbnailVideoCard({ 
   video, 
   isMain = false, 
@@ -22,6 +22,8 @@ function ThumbnailVideoCard({
   hasLoadedIframe?: boolean;
   onClick?: () => void;
 }) {
+  const [imageError, setImageError] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
   return (
     <motion.div
       className="cursor-pointer group"
@@ -69,54 +71,97 @@ function ThumbnailVideoCard({
         {/* 16:9 アスペクト比を維持 */}
         <div className="relative w-full pb-[56.25%]">
           {hasLoadedIframe ? (
-            // iframe表示（読み込み済み）
-            <motion.iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
-              title={video.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="eager"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-          ) : (
-            // サムネイル表示（軽量）
-            <>
-              <motion.img
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
-                alt={video.title}
-                loading="lazy"
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-              />
-              {/* 再生ボタンオーバーレイ */}
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <motion.div 
-                  className="bg-red-600 rounded-full p-4"
-                  whileHover={{ 
-                    scale: 1.1,
-                    backgroundColor: "#dc2626",
-                    transition: { duration: 0.2 }
-                  }}
-                  whileTap={{ scale: 0.95 }}
+            // iframe表示（読み込み済み・エラーハンドリング対応）
+            iframeError ? (
+              // iframe読み込み失敗時の代替表示
+              <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                <motion.div
+                  className="text-center p-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <motion.svg 
-                    className="w-8 h-8 text-white ml-1" 
-                    fill="currentColor" 
-                    viewBox="0 0 24 24"
-                    initial={{ scale: 1 }}
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    <path d="M8 5v14l11-7z"/>
-                  </motion.svg>
+                  <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-3">
+                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">動画を読み込めませんでした</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">YouTubeで直接視聴してください</p>
                 </motion.div>
               </div>
+            ) : (
+              <motion.iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
+                title={video.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="eager"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onError={() => setIframeError(true)}
+              />
+            )
+          ) : (
+            // サムネイル表示（エラーハンドリング対応）
+            <>
+              {imageError ? (
+                // サムネイル読み込み失敗時の代替表示
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                  <motion.div
+                    className="text-center p-4"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                      <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">サムネイル読み込み中...</p>
+                  </motion.div>
+                </div>
+              ) : (
+                <motion.img
+                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
+                  alt={video.title}
+                  loading="lazy"
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                  onError={() => setImageError(true)}
+                />
+              )}
+              {/* 再生ボタンオーバーレイ（エラー時は非表示） */}
+              {!imageError && (
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <motion.div 
+                    className="bg-red-600 rounded-full p-4"
+                    whileHover={{ 
+                      scale: 1.1,
+                      backgroundColor: "#dc2626",
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <motion.svg 
+                      className="w-8 h-8 text-white ml-1" 
+                      fill="currentColor" 
+                      viewBox="0 0 24 24"
+                      initial={{ scale: 1 }}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <path d="M8 5v14l11-7z"/>
+                    </motion.svg>
+                  </motion.div>
+                </div>
+              )}
             </>
           )}
         </div>
