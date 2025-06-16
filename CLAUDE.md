@@ -76,8 +76,13 @@ npm run start
 - ✅ Cloudflare Pages デプロイ・動作確認
 
 #### 🟡 中優先度（品質向上）
-- [ ] 全体レスポンシブテスト
-- [ ] パフォーマンス改善
+- [x] 全体レスポンシブテスト
+- [x] パフォーマンス改善
+  - [x] YouTube動画の遅延読み込み実装（feature/youtube-lazy-loading）
+  - [x] 画像の最適化（next/image使用、適切なフォーマット）
+  - [x] 不要な再レンダリング防止（React.memo、useMemo）
+  - [x] アニメーションの最適化（will-change、GPU加速）
+  - [x] バンドルサイズ分析と削減（163kB達成）
 - [ ] スマホでの動画読み込み最適化
 
 #### 🟢 低優先度（有象無象）
