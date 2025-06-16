@@ -8,7 +8,7 @@ interface VideoCarouselProps {
   videos: VideoData[];
 }
 
-// サムネイル/iframe切り替え式動画カード（遅延読み込み対応）
+// サムネイル/iframe切り替え式動画カード（遅延読み込み・エラーハンドリング対応）
 function ThumbnailVideoCard({ 
   video, 
   isMain = false, 
@@ -24,10 +24,22 @@ function ThumbnailVideoCard({
   isInViewport?: boolean;
   onClick?: () => void;
 }) {
+  const [imageError, setImageError] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
   return (
     <motion.div
       className="cursor-pointer group"
       onClick={onClick}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
+      tabIndex={isVisible ? 0 : -1}
+      role="button"
+      aria-label={`${video.title}を再生${isMain ? '（メイン動画）' : ''}`}
+      aria-pressed={isMain}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ 
         opacity: isVisible ? 1 : 0.3, 
@@ -71,23 +83,61 @@ function ThumbnailVideoCard({
         {/* 16:9 アスペクト比を維持 */}
         <div className="relative w-full pb-[56.25%]">
           {hasLoadedIframe ? (
-            // iframe表示（読み込み済み）
-            <motion.iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
-              title={video.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="eager"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
+            // iframe表示（読み込み済み・エラーハンドリング対応）
+            iframeError ? (
+              // iframe読み込み失敗時の代替表示
+              <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                <motion.div
+                  className="text-center p-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-3">
+                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">動画を読み込めませんでした</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">YouTubeで直接視聴してください</p>
+                </motion.div>
+              </div>
+            ) : (
+              <motion.iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
+                title={video.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="eager"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onError={() => setIframeError(true)}
+              />
+            )
           ) : (
-            // サムネイル表示（遅延読み込み対応）
+            // サムネイル表示（遅延読み込み・エラーハンドリング対応）
             <>
-              {isInViewport ? (
+              {imageError ? (
+                // サムネイル読み込み失敗時の代替表示
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                  <motion.div
+                    className="text-center p-4"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                      <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">サムネイル読み込み中...</p>
+                  </motion.div>
+                </div>
+              ) : isInViewport ? (
                 <motion.img
                   className="absolute top-0 left-0 w-full h-full object-cover"
                   src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
@@ -96,6 +146,7 @@ function ThumbnailVideoCard({
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 // プレースホルダー（軽量）
@@ -115,8 +166,8 @@ function ThumbnailVideoCard({
                   </motion.div>
                 </div>
               )}
-              {/* 再生ボタンオーバーレイ（サムネイル読み込み済みの場合のみ表示） */}
-              {isInViewport && (
+              {/* 再生ボタンオーバーレイ（サムネイル読み込み済み & エラー時は非表示） */}
+              {isInViewport && !imageError && (
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                   <motion.div 
                     className="bg-red-600 rounded-full p-4"
@@ -303,10 +354,20 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
       {/* プリロード式レイアウト：全動画を同時レンダリング、表示切り替えのみ */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
+      <div 
+        className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center"
+        role="region"
+        aria-label="動画カルーセル"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         
         {/* 左の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block relative">
+        <div 
+          className="hidden lg:block relative"
+          role="group"
+          aria-label="前の動画"
+        >
           {videos.map((video, index) => {
             const isPrevVideo = index === prevIndex;
             const videoKey = `prev-${video.id}`;
@@ -331,7 +392,11 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         </div>
 
         {/* メイン動画（中央・3カラム分） */}
-        <div className="lg:col-span-3 relative">
+        <div 
+          className="lg:col-span-3 relative"
+          role="main"
+          aria-label={`現在の動画: ${videos[currentIndex]?.title || ''}`}
+        >
           {videos.map((video, index) => {
             const isCurrentVideo = index === currentIndex;
             const videoKey = `main-${video.id}`;
@@ -356,7 +421,11 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         </div>
 
         {/* 右の動画（デスクトップのみ表示） */}
-        <div className="hidden lg:block relative">
+        <div 
+          className="hidden lg:block relative"
+          role="group"
+          aria-label="次の動画"
+        >
           {videos.map((video, index) => {
             const isNextVideo = index === nextIndex;
             const videoKey = `next-${video.id}`;
@@ -387,16 +456,26 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
+        role="group"
+        aria-label="動画ナビゲーション"
       >
         <motion.button
           onClick={prevVideo}
-          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              prevVideo();
+            }
+          }}
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          aria-label="前の動画"
+          type="button"
         >
           <motion.svg 
             className="w-6 h-6 text-gray-600 dark:text-gray-300" 
@@ -405,19 +484,28 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
             viewBox="0 0 24 24"
             whileHover={{ x: -2 }}
             transition={{ type: "spring", stiffness: 400 }}
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </motion.svg>
         </motion.button>
         <motion.button
           onClick={nextVideo}
-          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              nextVideo();
+            }
+          }}
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           whileHover={{ 
             scale: 1.1,
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          aria-label="次の動画"
+          type="button"
         >
           <motion.svg 
             className="w-6 h-6 text-gray-600 dark:text-gray-300" 
@@ -426,6 +514,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
             viewBox="0 0 24 24"
             whileHover={{ x: 2 }}
             transition={{ type: "spring", stiffness: 400 }}
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </motion.svg>
@@ -439,15 +528,28 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.5 }}
+          role="tablist"
+          aria-label="動画選択"
         >
-          {videos.map((_, index) => (
+          {videos.map((video, index) => (
             <motion.button
               key={index}
-              className="rounded-full p-1"
+              className="rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => goToVideo(index)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  goToVideo(index);
+                }
+              }}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 300 }}
+              role="tab"
+              aria-selected={index === currentIndex}
+              aria-controls={`video-panel-${index}`}
+              aria-label={`動画 ${index + 1}: ${video.title}`}
+              type="button"
             >
               <motion.div
                 className="rounded-full"
